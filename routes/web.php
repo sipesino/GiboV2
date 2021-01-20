@@ -30,3 +30,5 @@ Route::get('/sample/load/{id}', 'TasksController@loadTodo');
 Route::post('/sample/add', 'TasksController@addTodo');
 
 Route::put('/sample/update', 'TasksController@updateTodo');
+
+Route::delete('/sample/delete/{id}', 'TasksController@deleteTodo');

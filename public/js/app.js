@@ -1866,8 +1866,14 @@ $("#check").on("change", function () {
     $("#duedate").prop("disabled", true);
   }
 });
-$(".cancel").on("click", function () {
+$(".bg-modal").find("#btnCancel").on("click", function () {
   $(".bg-modal").css("display", "none");
+});
+$("#btnNo").on("click", function () {
+  $(".delete-modal").css("display", "none");
+});
+$(".modal-content-edit").find("#btnCancel").on("click", function () {
+  $(".bg-modal-edit").css("display", "none");
 });
 
 function adjust(v) {
@@ -1891,6 +1897,7 @@ function hideAlert(alertObj) {
 
 function populateList(data) {
   var todoList = $("div.todo-list");
+  todoList.html("");
 
   if (data.response) {
     var list = data.data.data;
@@ -1904,16 +1911,18 @@ function populateList(data) {
         "class": "content"
       }).append($("<div></div>", {
         "class": "desc"
-      }).append($("<p></p>", {}).html(item.description)).append($("<span></span>", {}).html(item.duedate))).append($("<div></div>", {
+      }).append($("<p></p>", {}).html(item.description)).append($("<span></span>", {}).html(item.formatedDueDate))).append($("<div></div>", {
         "class": "btns"
       }).append($("<div></div>", {
         "class": "finEdit"
       }).append($("<button></button>", {
-        "class": "finished"
+        "class": "finished",
+        name: "finished"
       }).append($("<i></i>", {
         "class": "far fa-check-square"
       }))).append($("<button></button>", {
         "class": "edit",
+        name: "edit",
         "data-id": item.taskNo
       }).append($("<i></i>", {
         "class": "fas fa-pencil-alt"
@@ -1921,10 +1930,17 @@ function populateList(data) {
         var id = $(this).attr("data-id");
         getTask(id);
       })).append($("<button></button>", {
-        "class": "delete"
+        "class": "delete",
+        name: "delete",
+        "data-id": item.taskNo,
+        "data-desc": item.description
       }).append($("<i></i>", {
         "class": "far fa-trash-alt"
-      })))))));
+      })).on("click", function () {
+        var id = $(this).attr("data-id");
+        var description = $(this).attr("data-desc");
+        showConfirmDelete(id, description);
+      }))))));
       todoList.append(newUl);
     }
   } else {
@@ -1978,6 +1994,7 @@ function addTodo() {
   }).done(function (data) {
     var alertType = data.response ? "success" : "error";
     showAlert("", data.message, alertType);
+    $(".bg-modal").css("display", "none");
     loadCounter();
     loadList();
   }).fail(function () {
@@ -1985,13 +2002,69 @@ function addTodo() {
   });
 }
 
+function updateTask() {
+  var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+    description: "",
+    duedate: "",
+    taskNo: ""
+  };
+
+  if (!params.description.length || !params.duedate.length) {
+    showAlert(null, "Invalid parameters");
+    return;
+  }
+
+  $.ajax({
+    url: "/sample/update",
+    type: "PUT",
+    data: {
+      params: params
+    },
+    success: function success(data) {
+      var alertType = data.response ? "success" : "error";
+      showAlert("", data.message, alertType);
+      $(".bg-modal-edit").css("display", "none");
+      loadList();
+    },
+    error: function error() {
+      showAlert("", "Something went wrong");
+    }
+  });
+}
+
 function getTask(id) {
   $.get("/sample/load/" + id).done(function (data) {
     if (data.response) {
-      $("modal-content-edit").find("input#description").val(data.data.description);
-      $("modal-content-edit").find("input#duedate").val(data.data.duedate);
+      $(".modal-content-edit").find("input#taskNo").val(data.data.taskNo);
+      $(".modal-content-edit").find("textarea#description").val(data.data.description);
+      $(".modal-content-edit").find("input#duedate").val(data.data.duedate);
+      $(".bg-modal-edit").css("display", "flex");
     } else {
       showAlert("", "Failed to retrieve task ID: " + id);
+    }
+  });
+}
+
+function showConfirmDelete(id, description) {
+  $(".confirm-delete").find("span#taskNo").html(id);
+  $(".confirm-delete").find("button#btnYes").attr("data-id", id);
+  $(".confirm-delete").find("span#description").html(description);
+  $(".delete-modal").css("display", "flex");
+}
+
+function deleteTask(id) {
+  $.ajax({
+    url: "/sample/delete/" + id,
+    type: "DELETE",
+    success: function success(data) {
+      var alertType = data.response ? "success" : "error";
+      showAlert("", data.message, alertType);
+      $(".delete-modal").css("display", "none");
+      loadCounter();
+      loadList();
+    },
+    error: function error() {
+      showAlert("", "Something went wrong");
     }
   });
 }
@@ -2000,20 +2073,22 @@ $(function () {
   loadList();
   loadCounter();
   $("#btnSave").on("click", function () {
-    var inputs = $('form[name="frmAdd"]').find("input").serializeArray();
+    var inputs = $('form[name="frmAdd"]').find("input,textarea").serializeArray();
     var errors = 0;
     var params = {};
 
     for (idx in inputs) {
-      var inputObj = $("#" + inputs[idx].name);
+      if (inputs[idx].name !== "check") {
+        var inputObj = $("#" + inputs[idx].name);
 
-      if (inputObj.attr("required") !== undefined) {
-        if (!inputs[idx].value.length) {
-          errors++;
+        if (inputObj.attr("required") !== undefined) {
+          if (!inputs[idx].value.length) {
+            errors++;
+          }
         }
-      }
 
-      Object.assign(params, _defineProperty({}, inputs[idx].name, inputs[idx].value));
+        Object.assign(params, _defineProperty({}, inputs[idx].name, inputs[idx].value));
+      }
     }
 
     if (errors > 0) {
@@ -2022,6 +2097,36 @@ $(function () {
     }
 
     addTodo(params);
+  });
+  $("#btnUpdate").on("click", function () {
+    var inputs = $('form[name="frmEdit"]').find("input,textarea").serializeArray();
+    var errors = 0;
+    var params = {};
+
+    for (idx in inputs) {
+      if (inputs[idx].name !== "check") {
+        var inputObj = $("#" + inputs[idx].name);
+
+        if (inputObj.attr("required") !== undefined) {
+          if (!inputs[idx].value.length) {
+            errors++;
+          }
+        }
+
+        Object.assign(params, _defineProperty({}, inputs[idx].name, inputs[idx].value));
+      }
+    }
+
+    if (errors > 0) {
+      showAlert("", "Please provide field values");
+      return;
+    }
+
+    updateTask(params);
+  });
+  $("#btnYes").on("click", function () {
+    var id = $(this).attr("data-id");
+    deleteTask(id);
   });
 });
 

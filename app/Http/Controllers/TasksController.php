@@ -47,7 +47,7 @@ class TasksController extends Controller
     public function addTodo(Request $request)
     {
 
-        $result = array('response' => true, 'message' => 'Success');
+        $result = array('response' => true, 'message' => 'Task added successfully.');
         try {
             $params = $request->input('params');
             if (empty($params['description']) || empty($params['duedate'])) {
@@ -63,6 +63,34 @@ class TasksController extends Controller
 
     public function updateTodo(Request $request)
     {
+        $result = array('response' => true, 'message' => 'Task updated successfully.');
+        try {
+            $params = $request->input('params');
+            if (empty($params['description']) || empty($params['duedate'])) {
+                throw new Exception('Invalid parameters');
+            }
+            $task = Task::find($params["taskNo"]);
+            $task->description = $params["description"];
+            $task->duedate = str_replace("T", " ", $params["duedate"]);
+            $task->save();
+        } catch (Exception $e) {
+            $result['response'] = false;
+            $result['message'] = $e->getMessage();
+        }
+        return $result;
+    }
+
+    public function deleteTodo($id)
+    {
+        $result = array('response' => true, 'message' => 'Task deleted modafaka successfully.');
+        try {
+            $task = Task::find($id);
+            $task->delete();
+        } catch (Exception $e) {
+            $result['response'] = false;
+            $result['message'] = $e->getMessage();
+        }
+        return $result;
     }
     /* ======================================== */
 
@@ -70,46 +98,5 @@ class TasksController extends Controller
     public function index()
     {
         return view('index');
-    }
-
-    public function show()
-    {
-        $data['data'] = DB::table('tasks')->get();
-
-        if (count($data) > 0) {
-            return view('index', $data);
-        } else {
-            return view('index');
-        }
-    }
-
-    public function save()
-    {
-    }
-
-    public function store(Request $request)
-    {
-        $description = $request->input('description');
-        $duedate = $request->input('duedate');
-
-        DB::insert('INSERT INTO tasks(description, duedate) VALUES(?,?)', [$description, $duedate]);
-
-        $this->show();
-        return redirect('/');
-    }
-
-    public function edit(Task $task)
-    {
-        //
-    }
-
-    public function update(Request $request, Task $task)
-    {
-        //
-    }
-
-    public function destroy(Task $task)
-    {
-        //
     }
 }
