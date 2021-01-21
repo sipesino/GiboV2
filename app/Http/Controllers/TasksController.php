@@ -10,14 +10,9 @@ use Facade\FlareClient\Http\Response;
 
 class TasksController extends Controller
 {
-
-    /*
-     * Sample no-refresh loading
-     */
-
-    public function sample()
+    public function index()
     {
-        return view('sample');
+        return view('index');
     }
 
     public function loadTodo($id, Request $request)
@@ -93,10 +88,4 @@ class TasksController extends Controller
         return $result;
     }
     /* ======================================== */
-
-
-    public function index()
-    {
-        return view('index');
-    }
 }

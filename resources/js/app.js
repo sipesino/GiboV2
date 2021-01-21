@@ -170,7 +170,7 @@ function loadList(
     params = { page: 1, limit: 5, id: "all", sortBy: "ASC", orderBy: "taskNo" }
 ) {
     $.get(
-        "/sample/load/" +
+        "/load/" +
             params.id +
             "?page=" +
             params.page +
@@ -191,7 +191,7 @@ function loadList(
 
 function loadCounter() {
     var divCounter = $("div.todo-list-counter");
-    $.get("/sample/load/all?count=1")
+    $.get("/load/all?count=1")
         .done(function (data) {
             if (data.response) {
                 divCounter.html(data.data);
@@ -209,7 +209,7 @@ function addTodo(params = { description: "", duedate: "" }) {
         showAlert(null, "Invalid parameters");
         return;
     }
-    $.post("/sample/add", { params: params })
+    $.post("/add", { params: params })
         .done(function (data) {
             var alertType = data.response ? "success" : "error";
             showAlert("", data.message, alertType);
@@ -228,7 +228,7 @@ function updateTask(params = { description: "", duedate: "", taskNo: "" }) {
         return;
     }
     $.ajax({
-        url: "/sample/update",
+        url: "/update",
         type: "PUT",
         data: { params: params },
         success: function (data) {
@@ -244,7 +244,7 @@ function updateTask(params = { description: "", duedate: "", taskNo: "" }) {
 }
 
 function getTask(id) {
-    $.get("/sample/load/" + id).done(function (data) {
+    $.get("/load/" + id).done(function (data) {
         if (data.response) {
             $(".modal-content-edit").find("input#taskNo").val(data.data.taskNo);
             $(".modal-content-edit")
@@ -269,7 +269,7 @@ function showConfirmDelete(id, description) {
 
 function deleteTask(id) {
     $.ajax({
-        url: "/sample/delete/" + id,
+        url: "/delete/" + id,
         type: "DELETE",
         success: function (data) {
             var alertType = data.response ? "success" : "error";

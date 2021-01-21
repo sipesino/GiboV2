@@ -1956,7 +1956,7 @@ function loadList() {
     sortBy: "ASC",
     orderBy: "taskNo"
   };
-  $.get("/sample/load/" + params.id + "?page=" + params.page + "&limit=" + params.limit + "&sortBy=" + params.sortBy + "&orderBy=" + params.orderBy).done(function (data) {
+  $.get("/load/" + params.id + "?page=" + params.page + "&limit=" + params.limit + "&sortBy=" + params.sortBy + "&orderBy=" + params.orderBy).done(function (data) {
     populateList(data);
   }).fail(function () {
     populateList({
@@ -1967,7 +1967,7 @@ function loadList() {
 
 function loadCounter() {
   var divCounter = $("div.todo-list-counter");
-  $.get("/sample/load/all?count=1").done(function (data) {
+  $.get("/load/all?count=1").done(function (data) {
     if (data.response) {
       divCounter.html(data.data);
     } else {
@@ -1989,7 +1989,7 @@ function addTodo() {
     return;
   }
 
-  $.post("/sample/add", {
+  $.post("/add", {
     params: params
   }).done(function (data) {
     var alertType = data.response ? "success" : "error";
@@ -2015,7 +2015,7 @@ function updateTask() {
   }
 
   $.ajax({
-    url: "/sample/update",
+    url: "/update",
     type: "PUT",
     data: {
       params: params
@@ -2033,7 +2033,7 @@ function updateTask() {
 }
 
 function getTask(id) {
-  $.get("/sample/load/" + id).done(function (data) {
+  $.get("/load/" + id).done(function (data) {
     if (data.response) {
       $(".modal-content-edit").find("input#taskNo").val(data.data.taskNo);
       $(".modal-content-edit").find("textarea#description").val(data.data.description);
@@ -2054,7 +2054,7 @@ function showConfirmDelete(id, description) {
 
 function deleteTask(id) {
   $.ajax({
-    url: "/sample/delete/" + id,
+    url: "/delete/" + id,
     type: "DELETE",
     success: function success(data) {
       var alertType = data.response ? "success" : "error";

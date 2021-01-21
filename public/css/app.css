@@ -9,9 +9,8 @@ body {
     background-size: cover;
     color: #e9eced;
     margin: 0% 30%;
-    padding: 75% 0px 5% 0px;
+    padding: 75% 0% 5% 0%;
 }
-
 @media only screen and (min-width: 375px) {
     body {
         padding: 60% 0px 5% 0px;
@@ -23,8 +22,11 @@ body {
     }
 }
 @media only screen and (min-width: 768px) {
+    body {
+        padding: 28% 0px 5% 0px;
     }
 }
+
 @media only screen and (min-width: 1024px) {
     body {
         padding: 23% 0px 5% 0px;
@@ -80,21 +82,6 @@ a {
 
 .modal-content h4 {
     margin: 10px 0px 20px 0px;
-}
-
-.btns {
-    display: flex;
-}
-
-.btns button {
-    all: unset;
-    padding: 10px;
-    text-decoration: none;
-    background: transparent;
-    outline: none;
-    color: white;
-    transition: 0.2s;
-    cursor: pointer;
 }
 
 .duedate {
@@ -247,6 +234,21 @@ ul {
     margin: 2px;
 }
 
+.btns {
+    display: flex;
+}
+
+.btns button {
+    all: unset;
+    padding: 10px;
+    text-decoration: none;
+    background: transparent;
+    outline: none;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
 .finEdit {
     display: flex;
     flex-direction: column;
@@ -289,6 +291,9 @@ ul {
     margin: auto;
 }
 
+#taskNo {
+    display: none;
+}
 .addBtn:hover {
     width: 4.5rem;
     height: 4.5rem;
@@ -340,35 +345,6 @@ button[name="delete"] {
     body {
         margin: 0;
     }
-}
-
-.confirm-delete,
-.alert-message {
-    background-color: white;
-    border-radius: 10px;
-    color: black;
-    text-align: center;
-    padding: 20px;
-    flex-direction: column;
-}
-
-.alert-message {
-    position: fixed;
-    bottom: 3%;
-    right: 3%;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.alert-success {
-    background-color: #a6d785;
-}
-
-.alert-error {
-    background-color: #cd5c5c;
-    color: white;
 }
 
 @-webkit-keyframes gradient {

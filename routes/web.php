@@ -15,20 +15,10 @@ use App\Http\Controllers\TasksController;
 
 Route::get('/', 'TasksController@index');
 
-// Route::resource('task', 'TasksController');
+Route::get('/load/{id}', 'TasksController@loadTodo');
 
-Route::post('/', 'TasksController@store');
+Route::post('/add', 'TasksController@addTodo');
 
-Route::get('/', 'TasksController@show');
+Route::put('/update', 'TasksController@updateTodo');
 
-// Sample
-
-Route::get('/sample', 'TasksController@sample');
-
-Route::get('/sample/load/{id}', 'TasksController@loadTodo');
-
-Route::post('/sample/add', 'TasksController@addTodo');
-
-Route::put('/sample/update', 'TasksController@updateTodo');
-
-Route::delete('/sample/delete/{id}', 'TasksController@deleteTodo');
+Route::delete('/delete/{id}', 'TasksController@deleteTodo');
